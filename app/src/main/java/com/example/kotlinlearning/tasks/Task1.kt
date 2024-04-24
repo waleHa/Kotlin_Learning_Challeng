@@ -16,26 +16,30 @@ Bank Cards
 
  Assuming card and date as input write a function to verify valid card numbers
   */
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 val validCompanyCodes = setOf("1121", "1111", "3796")
 
 fun verifyCard(bankCardNumbers: Long): Boolean {
     val cardString = bankCardNumbers.toString()
     val companyCode = cardString.substring(0, 4)
-    val expiryDate = cardString.substring(cardString.length - 4)
-
-    // Check if the expiry date consists of exactly four digits
-    if (expiryDate.length != 4) {
-        return false
-    }
+    val expiryDateString = cardString.substring(cardString.length - 4)
 
     // Check if the first two digits represent a valid month (1-12)
-    val expiryMonth = expiryDate.substring(0, 2).toIntOrNull()
+    val expiryMonth = expiryDateString.substring(0, 2).toIntOrNull()
     if (expiryMonth == null || expiryMonth !in 1..12) {
         return false
     }
 
-    return validCompanyCodes.contains(companyCode)
+    // Get the current date
+    val currentDate = LocalDate.now()
+
+    // Parse the expiry date string to LocalDate
+    val expiryDate = LocalDate.parse(expiryDateString, DateTimeFormatter.ofPattern("MMyy"))
+
+    // Check if the expiry date is in the future
+    return expiryDate.isAfter(currentDate) && validCompanyCodes.contains(companyCode)
 }
 
 fun main() {
@@ -46,5 +50,3 @@ fun main() {
         println("Card is invalid")
     }
 }
-
-
